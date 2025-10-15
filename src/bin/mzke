@@ -1,0 +1,104 @@
+#!/bin/bash
+# mzke -- make for muziq
+
+function _mzke_find_mzkefile() {
+
+  STARTDIR=$(pwd -P)
+  cd "$STARTDIR"
+
+  while true; do
+
+    NUMSLASHES=$(pwd -P | tr -d -c / | wc -c)
+    if [ "$NUMSLASHES" -le 2 ]; then
+      break
+    fi
+
+    cd ..
+    if [ -r Mzkefile ]; then
+      MAKEFILE="$(pwd -P)"/Mzkefile
+      break
+    fi
+
+  done
+
+  cd "$STARTDIR"
+  echo $MAKEFILE
+}
+
+SUBDIR=
+
+# order of M.kefile priority:
+# 1. specified with -f
+# 2. ./Mzkefile
+# 3. ./Makefile
+# 4. any Mzkefile in parent, up to 3 levels below root (e.g., /usr/local/etc/Mzkefile is ok but /usr/local/Mzkefile isn't)
+
+if [ "$1" == -f ]; then
+  MAKEFILE="$2"
+  shift 2
+elif [ -r Mzkefile ]; then
+  MAKEFILE=Mzkefile
+elif [ -r Makefile ]; then
+  MAKEFILE=Makefile
+else
+  MAKEFILE=$(_mzke_find_mzkefile)
+  DIRNAME=$(dirname "$MAKEFILE")
+  SUBDIR="-C \"$DIRNAME\""
+  MAKEFILE=$(basename "$MAKEFILE")
+fi
+
+if [ "$1" == -C ]; then
+  if [ -n "$SUBDIR" ]; then
+    echo "Error: MAKEFILE found in parent dir requires $SUBDIR, overriding this -C option: \"$2\"."
+    exit 1
+  fi
+  SUBDIR="-C \"$2\""
+  shift 2
+fi
+
+if [ "$1" == -n ]; then
+  OPTS=-n
+  shift
+fi
+
+if [ "$1" == -s ]; then
+  OPTS=-s
+  NO_PRINT_BANNER=1
+  shift
+fi
+
+TARGET=all
+
+if [ -n "$1" ]; then
+  TARGET="$1"
+  shift
+fi
+
+VARS="IS_MZKE=YES MAKE_USER_COMMAND=mzke"
+ARGS=
+
+if [ $# -gt 0 ]; then
+  ARGS_QUOTED=ARGS=\""$@"\"
+  ARGS=ARGS="$@"
+fi
+
+# Rule 1: if no makefile and target is "prep", use Makefile
+# Makefile.song.common
+
+if [ "$TARGET" == prep -a -z "$MAKEFILE" ]; then
+  MAKEFILE=/usr/local/share/muziq/Makefile.song.common
+fi
+
+if [ -z "$MAKEFILE" ]; then
+  echo Fatal error: No Mzkefile found >&2
+  exit 1
+fi
+
+# Execute make
+[ "$NO_PRINT_BANNER" = 1 ] || echo make -f $MAKEFILE $SUBDIR $OPTS $VARS $ARGS_QUOTED $TARGET
+eval make -f \"$MAKEFILE\" $SUBDIR $OPTS $VARS $ARGS_QUOTED $TARGET
+# if [ -z "$ARGS" ]; then
+#   make -f "$MAKEFILE" $VARS "$TARGET"
+# else
+#   make -f "$MAKEFILE" $VARS "$ARGS" "$TARGET"
+# fi
