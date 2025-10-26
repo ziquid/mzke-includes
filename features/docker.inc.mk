@@ -60,7 +60,7 @@ ssh: run ## SSH into the $(CONTAINER_NAME) container
 #	docker exec -t -i $(CONTAINER_NAME) /bin/sh
 
 .PHONY: status st ls
-status as ls: ## Show (all) container status
+status st ls: ## Show (all) container status
 	docker compose ls $($@_ARGS)
 
 .PHONY: stop
