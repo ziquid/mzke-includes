@@ -24,6 +24,10 @@ ifeq ($(DOCKER_RUNNING),N)
 endif
 endif # N-Darwin
 
+.PHONY: down
+down: ## Stop the docker containers, remove networks
+	docker compose down $($@_ARGS)
+
 .PHONY: logs
 logs: ddr docker-compose.yml ## Show container logs for the $(CONTAINER_NAME) container
 	docker logs $(CONTAINER_NAME) $($@_ARGS)
@@ -54,6 +58,10 @@ ssh: run ## SSH into the $(CONTAINER_NAME) container
 	docker exec -t -i $(CONTAINER_NAME) /bin/bash
 # @FIXME: Support images that don't have bash
 #	docker exec -t -i $(CONTAINER_NAME) /bin/sh
+
+.PHONY: status st ls
+status as ls: ## Show (all) container status
+	docker compose ls $($@_ARGS)
 
 .PHONY: stop
 stop: ## Stop the docker containers
