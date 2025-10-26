@@ -28,22 +28,22 @@ LOCAL_INSTALL_ENTRIES ?=
 # Format: source_pattern:destination_directory:permissions
 define process-install-entry
 	@$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
-	@$(eval DEST_DIR := $(word 2,$(subst :, ,$1)))
+	@$(eval DEST_DIR := $(shell echo $(word 2,$(subst :, ,$1))))
 	@$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
-	
+
 	@echo "Processing entry: $(SOURCE_PATTERN) -> $(DEST_DIR) ($(PERMISSIONS))"
-	
+
 	@if [ ! -d "$(DEST_DIR)" ]; then \
 		echo "Creating directory $(DEST_DIR)"; \
 		mkdir -p "$(DEST_DIR)" 2>/dev/null || echo "Warning: Failed to create directory $(DEST_DIR)"; \
 	fi
-	
+
 	@for file in $(SOURCE_PATTERN); do \
 		if [ -f "$$file" ]; then \
 			filename=$$(basename "$$file"); \
 			dest_path="$(DEST_DIR)/$$filename"; \
 			echo "Installing $$file to $$dest_path with permissions $(PERMISSIONS)"; \
-			cp -f "$$file" "$$dest_path" 2>/dev/null || echo "Warning: Failed to copy $$file to $$dest_path"; \
+			cp -fa "$$file" "$$dest_path" 2>/dev/null || echo "Warning: Failed to copy $$file to $$dest_path"; \
 			chmod "$(PERMISSIONS)" "$$dest_path" 2>/dev/null || echo "Warning: Failed to set permissions $(PERMISSIONS) on $$dest_path"; \
 		else \
 			echo "Warning: Source file $$file not found"; \
@@ -56,9 +56,9 @@ define show-install-entry
 	@$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
 	@$(eval DEST_DIR := $(word 2,$(subst :, ,$1)))
 	@$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
-	
+
 	@echo "Would process entry: $(SOURCE_PATTERN) -> $(DEST_DIR) ($(PERMISSIONS))"
-	
+
 	@for file in $(SOURCE_PATTERN); do \
 		if [ -f "$$file" ]; then \
 			filename=$$(basename "$$file"); \
