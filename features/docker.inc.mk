@@ -28,6 +28,10 @@ endif # N-Darwin
 down: ## Stop the docker containers, remove networks
 	docker compose down $($@_ARGS)
 
+.PHONY: exec
+exec: run ## exec something into the $(CONTAINER_NAME) container
+	docker compose exec $(CONTAINER_NAME) $($@_ARGS)
+
 .PHONY: logs
 logs: ddr docker-compose.yml ## Show container logs for the $(CONTAINER_NAME) container
 	docker logs $(CONTAINER_NAME) $($@_ARGS)
