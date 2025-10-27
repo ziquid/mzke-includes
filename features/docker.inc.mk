@@ -29,12 +29,16 @@ down: ## Stop the docker containers, remove networks
 	docker compose down $($@_ARGS)
 
 .PHONY: exec
-exec: run ## exec something into the $(CONTAINER_NAME) container
-	docker compose exec $(CONTAINER_NAME) $($@_ARGS)
+exec: # run ## exec something in a service
+	docker compose exec $($@_ARGS)
 
 .PHONY: logs
 logs: ddr docker-compose.yml ## Show container logs for the $(CONTAINER_NAME) container
 	docker logs $(CONTAINER_NAME) $($@_ARGS)
+
+.PHONY: slogs
+slogs: ddr docker-compose.yml ## Show service logs for the specified container
+	docker compose logs $($@_ARGS)
 
 .PHONY: rb rebuild
 .SECONDEXPANSION:
