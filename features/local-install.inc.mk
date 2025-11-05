@@ -27,9 +27,9 @@ LOCAL_INSTALL_ENTRIES ?=
 # Function to process a single installation entry
 # Format: source_pattern:destination_directory:permissions
 define process-install-entry
-	@$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
-	@$(eval DEST_DIR := $(shell echo $(word 2,$(subst :, ,$1))))
-	@$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
+	$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
+	$(eval DEST_DIR := $(shell echo $(word 2,$(subst :, ,$1))))
+	$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
 
 	@echo "Processing entry: $(SOURCE_PATTERN) -> $(DEST_DIR) ($(PERMISSIONS))"
 
@@ -53,9 +53,9 @@ endef
 
 # Function to show what would be installed without actually installing
 define show-install-entry
-	@$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
-	@$(eval DEST_DIR := $(word 2,$(subst :, ,$1)))
-	@$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
+	$(eval SOURCE_PATTERN := $(word 1,$(subst :, ,$1)))
+	$(eval DEST_DIR := $(word 2,$(subst :, ,$1)))
+	$(eval PERMISSIONS := $(word 3,$(subst :, ,$1)))
 
 	@echo "Would process entry: $(SOURCE_PATTERN) -> $(DEST_DIR) ($(PERMISSIONS))"
 
