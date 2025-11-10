@@ -5,7 +5,7 @@
 - Add as a submodule in the `mk` subdir:
 
 ```sh
-git submodule add git@somewhere/somewhere-else/mzke-includes.git mk
+git submodule add git@somewhere:somewhere-else/mzke-includes.git mk
 ```
 
 - Copy the included `Mzkefile.example` from the subdir to the project root
