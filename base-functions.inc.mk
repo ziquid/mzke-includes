@@ -1,6 +1,6 @@
 # base functions
 
-# F_INCLUDE_FILES -- include the relevate file(s)
+# F_INCLUDE_FILES -- include the relevant file(s)
 F_INCLUDE_FILES = \
   $(foreach f,$(strip $1), \
     $(call debug,will attempt to include mk/$f.inc.mk) \
